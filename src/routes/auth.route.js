@@ -6,13 +6,16 @@ import {
     generateApiKey,
     getProfile,
 } from "../controllers/auth.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.get("/logout", logout);
-router.post("/api-key", generateApiKey);
-router.get("/me", getProfile);
+router.get("/logout", verifyJWT, logout);
+
+router.post("/api-key",verifyJWT, generateApiKey);
+
+router.get("/me", verifyJWT, getProfile);
 
 export default router;
