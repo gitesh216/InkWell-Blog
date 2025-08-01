@@ -13,3 +13,64 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum STATUS {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        Int          @id @default(autoincrement())
+  username  String       @unique
+  password  String
+  role      UserRole     @default(USER) // user or admin
+  createdAt DateTime     @default(now())
+  posts     Post[]
+  apiKeys   ApiKey[]
+  reviews   PostReview[]
+}
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id         Int          @id @default(autoincrement())
+  title      String
+  content    String
+  status     STATUS       @default(PENDING) // pending, approved, rejected
+  userId     Int
+  categoryId Int?
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  reviews    PostReview[]
+  createdAt  DateTime     @default(now())
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  posts     Post[]
+  createdAt DateTime @default(now())
+}
+
+model PostReview {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  adminId   Int
+  action    STATUS   @default(PENDING) // approve or reject
+  comment   String?
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  admin     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
