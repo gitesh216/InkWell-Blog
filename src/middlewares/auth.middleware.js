@@ -26,7 +26,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 export const verifyApiKey = asyncHandler(async (req, res, next) => {
     const apiKey = req.header("X-API-Key");
     if (!apiKey) {
-        throw new Error("API key required");
+        throw new ApiError(401, "API key required");
     }
 
     const keyRecord = await db.apiKey.findUnique({
@@ -35,7 +35,7 @@ export const verifyApiKey = asyncHandler(async (req, res, next) => {
     });
 
     if (!keyRecord) {
-        throw new ApiError("Invalid API key");
+        throw new ApiError(403, "Invalid API key");
     }
 
     req.user = keyRecord.user;
