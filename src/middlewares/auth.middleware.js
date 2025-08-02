@@ -41,3 +41,20 @@ export const verifyApiKey = asyncHandler(async (req, res, next) => {
     req.user = keyRecord.user;
     next();
 });
+
+export const checkAdmin = asyncHandler(async (req, res, next) => {
+    const { userId } = req.user;
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized");
+    }
+    const user = await db.user.findUnique({
+        where: { id: userId },
+    });
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+    if (user.role !== "ADMIN") {
+        throw new ApiError(403, "Forbidden");
+    }
+    next();
+})
