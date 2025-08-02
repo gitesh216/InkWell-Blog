@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { checkAdmin, verifyApiKey, verifyJWT } from "../middlewares/auth.middleware";
+import {
+    checkAdmin,
+    verifyApiKey,
+    verifyJWT,
+} from "../middlewares/auth.middleware";
 
 const router = Router();
 
