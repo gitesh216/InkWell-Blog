@@ -44,27 +44,21 @@ const approvePost = asynchandler(async (req, res) => {
     if (!post) {
         throw new ApiError(404, "Post not found");
     }
-    const updatedPost = await db.post.update({
-        where: {
-            id: postId,
-        },
-        data: {
-            status: "APPROVED",
-        },
-    });
-    if (!updatedPost) {
+    const [updatedPost, postReview] = await db.$transaction([
+        db.post.update({
+            where: { id: postId },
+            data: { status: "APPROVED" },
+        }),
+        db.postReview.create({
+            data: {
+                postId: postId,
+                adminId: req.user.id,
+                action: "APPROVED",
+            },
+        }),
+    ]);
+    if (!updatedPost || !postReview) {
         throw new ApiError(500, "Failed to approve post");
-    }
-    const postReview = await db.postReview.create({
-        data: {
-            postId: postId,
-            adminId: user.id,
-            action: "REJECTED",
-            comment: postComment ? postComment : "",
-        },
-    });
-    if (!postReview) {
-        throw new ApiError(500, "Failed to create post review");
     }
     return res
         .status(200)
@@ -96,27 +90,22 @@ const rejectPost = asynchandler(async (req, res) => {
     if (!post) {
         throw new ApiError(404, "Post not found");
     }
-    const updatedPost = await db.post.update({
-        where: {
-            id: postId,
-        },
-        data: {
-            status: "REJECTED",
-        },
-    });
-    if (!updatedPost) {
+    const [updatedPost, postReview] = await db.$transaction([
+        db.post.update({
+            where: { id: postId },
+            data: { status: "REJECTED" },
+        }),
+        db.postReview.create({
+            data: {
+                postId: postId,
+                adminId: req.user.id,
+                action: "REJECTED",
+                comment: postComment ? postComment : "",
+            },
+        }),
+    ]);
+    if (!updatedPost || !postReview) {
         throw new ApiError(500, "Failed to reject post");
-    }
-    const postReview = await db.postReview.create({
-        data: {
-            postId: postId,
-            adminId: user.id,
-            action: "REJECTED",
-            comment: postComment ? postComment : "",
-        },
-    });
-    if (!postReview) {
-        throw new ApiError(500, "Failed to create post review");
     }
     return res
         .status(200)
