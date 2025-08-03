@@ -7,14 +7,15 @@ import {
     getProfile,
 } from "../controllers/auth.controller.js";
 import { verifyApiKey, verifyJWT } from "../middlewares/auth.middleware.js";
+import { authRateLimiter } from "../libs/rate-limiter.js";
 
 const router = Router();
 
-router.post("/register", register);
-router.post("/login", login);
+router.post("/register", authRateLimiter, register);
+router.post("/login", authRateLimiter,  login);
 router.get("/logout", verifyJWT, logout);
 
-router.post("/api-key", verifyJWT, generateApiKey);
+router.post("/api-key", verifyJWT, authRateLimiter, generateApiKey);
 
 router.get("/me", verifyJWT, verifyApiKey, getProfile);
 
