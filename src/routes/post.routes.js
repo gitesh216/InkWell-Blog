@@ -8,10 +8,11 @@ import {
 } from "../controllers/post.controller.js";
 import { verifyApiKey, verifyJWT } from "../middlewares/auth.middleware.js";
 import { isPostPending } from "../middlewares/post.middleware.js";
+import { postRateLimiter } from "../libs/rate-limiter.js";
 
 const router = Router();
 
-router.post("/", verifyJWT, verifyApiKey, createPost);
+router.post("/", verifyJWT, verifyApiKey, postRateLimiter, createPost);
 
 router.get("/", verifyApiKey, listPosts);
 router.get("/:postId", verifyApiKey, viewPost);
