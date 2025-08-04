@@ -7,8 +7,8 @@ import { db } from "../libs/db.js";
 
 // Register user
 export const register = asynchandler(async (req, res) => {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
         throw new ApiError(400, "All fields are required");
     }
 
@@ -23,7 +23,7 @@ export const register = asynchandler(async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await db.user.create({
         data: {
-            name,
+            username,
             email,
             password: hashedPassword,
         },
