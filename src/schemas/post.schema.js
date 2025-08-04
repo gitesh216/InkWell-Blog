@@ -29,3 +29,5 @@ const rejectPostSchema = z.object({
             .optional(),
     }),
 });
+
+export { createPostSchema, categorySchema, approvePostSchema, rejectPostSchema };
