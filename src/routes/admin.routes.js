@@ -5,6 +5,8 @@ import {
     approvePost,
     rejectPost,
 } from "../controllers/admin.controller.js";
+import { approvePostSchema, rejectPostSchema } from "../schemas/post.schema.js";
+import { postValidate } from "../validators/post.validator.js";
 
 const router = Router();
 
@@ -14,6 +16,7 @@ router.get(
     verifyJWT,
     verifyApiKey,
     checkAdmin,
+    postValidate(approvePostSchema),
     approvePost,
 );
 router.get(
@@ -21,6 +24,7 @@ router.get(
     verifyJWT,
     verifyApiKey,
     checkAdmin,
+    postValidate(rejectPostSchema),
     rejectPost,
 );
 
